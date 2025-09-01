@@ -3,7 +3,7 @@ Gift Minting Protocol
 
 # 👑 AK$U Protocol
 
-**AK$U** is a sovereign, ceremonial protocol designed for symbolic minting, gifting, and lineage preservation. It is not a cryptocurrency, token, or financial asset.
+**AK$U** is a decentralized sovereign, ceremonial protocol designed for symbolic minting, gifting, and lineage preservation. It is not a cryptocurrency, token, or financial asset.
 
 ## 🪬 Intent
 
