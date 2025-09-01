@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AK$U Sovereign Node</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>👑AK$U</h1>
+  <h1>Minting Protocol</h1>
+  <div id="wallet-section">
+    <button onclick="createWallet()">🆕 Create Wallet</button>
+    <button onclick="loadWallet()">📂 Load Wallet</button>
+    <div id="wallet-info"></div>
+  </div>
+
+  <div id="actions" style="display:none;">
+    <button onclick="startMining()">⛏️ Start Mining</button>
+    <button onclick="sendAksu()">💸 Send AK$U</button>
+    <button onclick="viewBalance()">💼 View Balance</button>
+    <button onclick="refreshState()">🔄 Refresh Chain State</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="aksu.js"></script>
+</body>
+</html>
