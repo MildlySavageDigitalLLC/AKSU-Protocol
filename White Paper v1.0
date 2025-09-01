@@ -1,0 +1,58 @@
+🕯️ AK$U Protocol: Sovereign Minting Through Ritual Gifting  
+White Paper | v1.0 | September 1 2025
+
+---
+
+🔮 Abstract  
+AK$U is a symbolic minting protocol designed for ritual gifting, ceremonial exchange, and lineage preservation. It is not a cryptocurrency, token, or financial instrument. AK$U holds no intrinsic or market value and is not intended for trade, speculation, or investment. All minting and transfers are acts of symbolic generosity—performed freely, without monetary expectation.
+
+---
+
+🧬 Protocol Design
+
+Supply Logic  
+- Total Supply: 13,000,000 AK$U  
+- Genesis Lock: 1,300,000 AK$U (reserved, inaccessible)  
+- Circulating Supply: Minted in 23 AK$U increments  
+- Block Interval: 13 minutes (ritual delay between mining events)
+
+Wallets  
+- Generated locally via entropy-based UUID  
+- Stored in-browser using localStorage  
+- No private keys, no blockchain—each wallet is sovereign and ephemeral
+
+Mining Ritual  
+- Users may mine a block every 13 minutes  
+- Each block includes a timestamp, sigil, proof, and minted amount  
+- Chain state is local and ceremonial—not globally synchronized
+
+Transfer Logic  
+- AK$U may be sent between wallets as a gesture of gifting  
+- No fees, no confirmations—pure symbolic exchange  
+- Transactions are logged locally in a ceremonial ledger
+
+---
+
+🛡️ Licensing & Intent  
+AK$U is licensed under the Creative Commons Attribution-NoDerivatives 4.0 International License (CC BY-ND 4.0).  
+You may view, verify, and share the original code, but modification, contribution, or derivative works are strictly prohibited.
+
+> AK$U is not a monetary asset.  
+> It is not tradable, investable, or redeemable.  
+> It exists solely for gifting, ceremonial exchange, and symbolic lineage.
+
+---
+
+🪬 Use Cases
+
+- Symbolic Gifting: Share AK$U as a gesture of trust, inclusion, or ritual closure  
+- Protocol Demonstration: Showcase minting logic without financial implications  
+- Educational Tool: Teach supply mechanics, wallet logic, and ceremonial design  
+- Legacy Preservation: Encode timestamped blocks as lineage artifacts
+
+---
+
+🧾 Closing Declaration  
+AK$U is a sovereign artifact.  
+It may be gifted, honored, and verified—but never traded, altered, or commodified.  
+Its purpose is symbolic. Its value is ritual. Its lineage is eternal.
