@@ -5,6 +5,10 @@ const TOTAL_SUPPLY = 13000000.0;
 const GENESIS_LOCK = 1300000.0;
 const AVAILABLE_SUPPLY = TOTAL_SUPPLY - GENESIS_LOCK;
 
+// ⛓️ Mining Control
+let miningActive = false;
+let miningLoop = null;
+
 // 🪪 Wallet Functions
 function generateWalletAddress() {
   const entropy = crypto.randomUUID().replace(/-/g, '');
@@ -127,31 +131,28 @@ function mineBlock(wallet) {
 💰 Wallet Balance: ${wallet.balance} AK$U`);
 }
 
-// ⛏️ Auto-Mining Loop
+// ▶️ Start Auto-Mining
 function startAutoMining() {
-  setInterval(() => {
+  if (miningLoop) return;
+  miningActive = true;
+  miningLoop = setInterval(() => {
+    if (!miningActive) return;
     const walletId = localStorage.getItem('active_wallet');
     if (!walletId) return;
-
     const wallet = JSON.parse(localStorage.getItem(walletId));
     const now = Date.now();
-
     if (!wallet.last_mined || now - wallet.last_mined >= BLOCK_INTERVAL) {
       mineBlock(wallet);
     }
-  }, 1000); // Check every second
+  }, 1000);
 }
 
-// 🧭 Start auto-mining when wallet is loaded
-function showActions() {
-  document.getElementById('actions').style.display = 'block';
-  startAutoMining(); // Begin auto-mining loop
-}
-
-function startMining() {
-  const walletId = localStorage.getItem('active_wallet');
-  const wallet = JSON.parse(localStorage.getItem(walletId));
-  mineBlock(wallet);
+// ⏹️ Stop Auto-Mining
+function stopAutoMining() {
+  miningActive = false;
+  clearInterval(miningLoop);
+  miningLoop = null;
+  output(`🛑 Mining stopped. Protocol paused.`);
 }
 
 function viewBalance() {
@@ -176,4 +177,9 @@ function refreshState() {
 // 🧾 Ritual Output
 function output(text) {
   document.getElementById('output').innerText = text;
+}
+
+// 🧭 Show Actions
+function showActions() {
+  document.getElementById('actions').style.display = 'block';
 }
