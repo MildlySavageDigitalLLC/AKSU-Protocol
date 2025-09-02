@@ -1,5 +1,3 @@
-// aksu.js — Sovereign Mining Protocol Scroll
-
 // 🔧 Constants
 const BLOCK_INTERVAL = 13 * 60 * 1000; // 13 minutes in ms
 const MINT_AMOUNT = 23.0;
@@ -107,7 +105,7 @@ function mineBlock(wallet) {
   if (wallet.last_mined && now - wallet.last_mined < BLOCK_INTERVAL) {
     const wait = Math.ceil((BLOCK_INTERVAL - (now - wallet.last_mined)) / 1000);
     output(`⏳ Too soon to mine. Wait ${wait} seconds.`);
-    return;
+    return false;
   }
 
   const state = loadChainState();
@@ -130,18 +128,28 @@ function mineBlock(wallet) {
 🔮 Sigil: ${sigil} | Proof: ${proof} | Time: ${timestamp}
 📊 Circulating: ${state.circulating} AK$U | Remaining: ${state.remaining} AK$U
 💰 Wallet Balance: ${wallet.balance} AK$U`);
+  return true;
 }
 
 // ▶️ Start Auto-Mining Ritual
 function startAutoMining() {
   stopAutoMining(); // Clear previous loop
   miningActive = true;
+
+  const walletId = localStorage.getItem('active_wallet');
+  if (!walletId) {
+    output('⚠️ No active wallet found.');
+    return;
+  }
+  const wallet = JSON.parse(localStorage.getItem(walletId));
+
+  // Attempt immediate mining
+  const mined = mineBlock(wallet);
+
   miningLoop = setInterval(() => {
     if (!miningActive) return;
-    const walletId = localStorage.getItem('active_wallet');
-    if (!walletId) return;
-    const wallet = JSON.parse(localStorage.getItem(walletId));
     const now = Date.now();
+    const wallet = JSON.parse(localStorage.getItem(walletId));
     if (!wallet.last_mined || now - wallet.last_mined >= BLOCK_INTERVAL) {
       mineBlock(wallet);
     } else {
