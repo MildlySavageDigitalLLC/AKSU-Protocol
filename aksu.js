@@ -155,6 +155,7 @@ function stopAutoMining() {
   output(`🛑 Mining stopped. Protocol paused.`);
 }
 
+// 💼 View Balance
 function viewBalance() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
