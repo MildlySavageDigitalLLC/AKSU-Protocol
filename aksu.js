@@ -103,8 +103,6 @@ function sendAksu() {
 function mineBlock(wallet) {
   const now = Date.now();
   if (wallet.last_mined && now - wallet.last_mined < BLOCK_INTERVAL) {
-    const wait = Math.ceil((BLOCK_INTERVAL - (now - wallet.last_mined)) / 1000);
-    output(`⏳ Too soon to mine. Wait ${wait} seconds.`);
     return false;
   }
 
@@ -141,29 +139,36 @@ function startAutoMining() {
     output('⚠️ No active wallet found.');
     return;
   }
+
   const wallet = JSON.parse(localStorage.getItem(walletId));
+  const now = Date.now();
+  const timeSinceLastMine = wallet.last_mined ? now - wallet.last_mined : BLOCK_INTERVAL;
+  const timeUntilNextMine = Math.max(BLOCK_INTERVAL - timeSinceLastMine, 0);
 
-  // Attempt immediate mining
-  const mined = mineBlock(wallet);
+  // Mine immediately if eligible
+  if (timeUntilNextMine === 0) {
+    mineBlock(wallet);
+    startAutoMining(); // Schedule next block
+    return;
+  }
 
-  miningLoop = setInterval(() => {
+  // Schedule next block
+  miningLoop = setTimeout(() => {
     if (!miningActive) return;
-    const now = Date.now();
-    const wallet = JSON.parse(localStorage.getItem(walletId));
-    if (!wallet.last_mined || now - wallet.last_mined >= BLOCK_INTERVAL) {
-      mineBlock(wallet);
-    } else {
-      const wait = Math.ceil((BLOCK_INTERVAL - (now - wallet.last_mined)) / 1000);
-      output(`⏳ Waiting ${wait} seconds to mine next block...`);
-    }
-  }, 1000);
+    const updatedWallet = JSON.parse(localStorage.getItem(walletId));
+    mineBlock(updatedWallet);
+    startAutoMining(); // Schedule the next block
+  }, timeUntilNextMine);
+
+  const seconds = Math.ceil(timeUntilNextMine / 1000);
+  output(`⏳ Next block will be mined in ${seconds} seconds...`);
 }
 
 // ⏹️ Stop Auto-Mining Ritual
 function stopAutoMining() {
   miningActive = false;
   if (miningLoop) {
-    clearInterval(miningLoop);
+    clearTimeout(miningLoop);
     miningLoop = null;
   }
   output(`🛑 Mining stopped. Protocol paused.`);
