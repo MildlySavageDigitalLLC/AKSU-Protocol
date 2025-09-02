@@ -1,3 +1,5 @@
+// aksu.js — Sovereign Mining Protocol Scroll
+
 // 🔧 Constants
 const BLOCK_INTERVAL = 13 * 60 * 1000; // 13 minutes in ms
 const MINT_AMOUNT = 23.0;
@@ -5,9 +7,8 @@ const TOTAL_SUPPLY = 13000000.0;
 const GENESIS_LOCK = 1300000.0;
 const AVAILABLE_SUPPLY = TOTAL_SUPPLY - GENESIS_LOCK;
 
-// ⛓️ Mining Control
-let miningActive = false;
 let miningLoop = null;
+let miningActive = false;
 
 // 🪪 Wallet Functions
 function generateWalletAddress() {
@@ -131,9 +132,9 @@ function mineBlock(wallet) {
 💰 Wallet Balance: ${wallet.balance} AK$U`);
 }
 
-// ▶️ Start Auto-Mining
+// ▶️ Start Auto-Mining Ritual
 function startAutoMining() {
-  if (miningLoop) return;
+  stopAutoMining(); // Clear previous loop
   miningActive = true;
   miningLoop = setInterval(() => {
     if (!miningActive) return;
@@ -143,15 +144,20 @@ function startAutoMining() {
     const now = Date.now();
     if (!wallet.last_mined || now - wallet.last_mined >= BLOCK_INTERVAL) {
       mineBlock(wallet);
+    } else {
+      const wait = Math.ceil((BLOCK_INTERVAL - (now - wallet.last_mined)) / 1000);
+      output(`⏳ Waiting ${wait} seconds to mine next block...`);
     }
   }, 1000);
 }
 
-// ⏹️ Stop Auto-Mining
+// ⏹️ Stop Auto-Mining Ritual
 function stopAutoMining() {
   miningActive = false;
-  clearInterval(miningLoop);
-  miningLoop = null;
+  if (miningLoop) {
+    clearInterval(miningLoop);
+    miningLoop = null;
+  }
   output(`🛑 Mining stopped. Protocol paused.`);
 }
 
@@ -180,7 +186,6 @@ function output(text) {
   document.getElementById('output').innerText = text;
 }
 
-// 🧭 Show Actions
 function showActions() {
   document.getElementById('actions').style.display = 'block';
 }
