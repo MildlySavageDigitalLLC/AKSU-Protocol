@@ -101,11 +101,6 @@ function sendAksu() {
 
 // ⛏️ Mining Ritual
 function mineBlock(wallet) {
-  const now = Date.now();
-  if (wallet.last_mined && now - wallet.last_mined < BLOCK_INTERVAL) {
-    return false;
-  }
-
   const state = loadChainState();
   const blockNumber = state.block_height + 1;
   const entropy = crypto.randomUUID().replace(/-/g, '');
@@ -114,7 +109,7 @@ function mineBlock(wallet) {
   const sigil = `SIGIL_${blockNumber}_${entropy.slice(0, 8)}`;
 
   wallet.balance += MINT_AMOUNT;
-  wallet.last_mined = now;
+  wallet.last_mined = Date.now();
   localStorage.setItem(wallet.address, JSON.stringify(wallet));
 
   state.block_height = blockNumber;
@@ -126,12 +121,11 @@ function mineBlock(wallet) {
 🔮 Sigil: ${sigil} | Proof: ${proof} | Time: ${timestamp}
 📊 Circulating: ${state.circulating} AK$U | Remaining: ${state.remaining} AK$U
 💰 Wallet Balance: ${wallet.balance} AK$U`);
-  return true;
 }
 
-// ▶️ Start Auto-Mining Ritual
+// ▶️ Start Mining Ritual (Fresh Every Time)
 function startAutoMining() {
-  stopAutoMining(); // Clear previous loop
+  stopAutoMining(); // Clear any previous loop
   miningActive = true;
 
   const walletId = localStorage.getItem('active_wallet');
@@ -141,34 +135,23 @@ function startAutoMining() {
   }
 
   const wallet = JSON.parse(localStorage.getItem(walletId));
-  const now = Date.now();
-  const timeSinceLastMine = wallet.last_mined ? now - wallet.last_mined : BLOCK_INTERVAL;
-  const timeUntilNextMine = Math.max(BLOCK_INTERVAL - timeSinceLastMine, 0);
 
-  // Mine immediately if eligible
-  if (timeUntilNextMine === 0) {
-    mineBlock(wallet);
-    startAutoMining(); // Schedule next block
-    return;
-  }
+  // Mine immediately
+  mineBlock(wallet);
 
-  // Schedule next block
-  miningLoop = setTimeout(() => {
+  // Schedule next block every 13 minutes
+  miningLoop = setInterval(() => {
     if (!miningActive) return;
     const updatedWallet = JSON.parse(localStorage.getItem(walletId));
     mineBlock(updatedWallet);
-    startAutoMining(); // Schedule the next block
-  }, timeUntilNextMine);
-
-  const seconds = Math.ceil(timeUntilNextMine / 1000);
-  output(`⏳ Next block will be mined in ${seconds} seconds...`);
+  }, BLOCK_INTERVAL);
 }
 
-// ⏹️ Stop Auto-Mining Ritual
+// ⏹️ Stop Mining Ritual
 function stopAutoMining() {
   miningActive = false;
   if (miningLoop) {
-    clearTimeout(miningLoop);
+    clearInterval(miningLoop);
     miningLoop = null;
   }
   output(`🛑 Mining stopped. Protocol paused.`);
