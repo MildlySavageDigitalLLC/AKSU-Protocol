@@ -19,6 +19,7 @@ function createWallet() {
     last_mined: null
   };
   localStorage.setItem(address, JSON.stringify(wallet));
+  localStorage.setItem('active_wallet', address);
   document.getElementById('wallet-info').innerText = `🆕 Created Wallet: ${address}`;
   showActions();
 }
@@ -126,6 +127,27 @@ function mineBlock(wallet) {
 💰 Wallet Balance: ${wallet.balance} AK$U`);
 }
 
+// ⛏️ Auto-Mining Loop
+function startAutoMining() {
+  setInterval(() => {
+    const walletId = localStorage.getItem('active_wallet');
+    if (!walletId) return;
+
+    const wallet = JSON.parse(localStorage.getItem(walletId));
+    const now = Date.now();
+
+    if (!wallet.last_mined || now - wallet.last_mined >= BLOCK_INTERVAL) {
+      mineBlock(wallet);
+    }
+  }, 1000); // Check every second
+}
+
+// 🧭 Start auto-mining when wallet is loaded
+function showActions() {
+  document.getElementById('actions').style.display = 'block';
+  startAutoMining(); // Begin auto-mining loop
+}
+
 function startMining() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
@@ -154,8 +176,4 @@ function refreshState() {
 // 🧾 Ritual Output
 function output(text) {
   document.getElementById('output').innerText = text;
-}
-
-function showActions() {
-  document.getElementById('actions').style.display = 'block';
 }
