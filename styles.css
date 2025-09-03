@@ -92,3 +92,33 @@ h1 {
 #output:empty {
   display: none;
 }
+
+#instructions {
+  max-width: 800px;
+  margin: 0 auto 40px auto;
+  padding: 20px 30px;
+  background-color: rgba(20, 20, 20, 0.8);
+  border: 2px solid #444;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1.3em;
+  line-height: 1.6em;
+  text-align: left;
+  box-shadow: 0 0 20px #000;
+}
+
+#instructions h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+  color: #ffd700;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+
+#instructions ol {
+  padding-left: 20px;
+}
+
+#instructions li {
+  margin-bottom: 12px;
+}
