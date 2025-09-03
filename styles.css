@@ -64,6 +64,18 @@ h1 {
   color: #ff0000;
 }
 
+/* 🧭 Ritual Button Rows */
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.button-row:first-of-type {
+  margin-bottom: 10px;
+}
+
 /* 🧾 Output Scroll */
 #output {
   max-width: 90%;
