@@ -18,11 +18,14 @@
 
   <!-- ⚙️ Protocol Actions -->
   <div id="actions" style="display:none;">
+    <div class="button-row top-row">
     <button onclick="startAutoMining()">⛏️Start Mining</button>
     <button onclick="stopAutoMining()">🚫Stop Mining</button>
-    <button onclick="sendAksu()">📨Send AK$U</button> 
+    <button onclick="sendAksu()">📨Send AK$U</button>
+  </div>
+  <div class="button-row bottom-row">
     <button onclick="viewBalance()">⚖️View Balance</button>
-    <button onclick="startCountdown()">🔄Restart Ritual</button>
+    <button id="verify-button" onclick="verifyBlocks()">📜Verify Ledger</button>
   </div>
 
   <!-- 🧾 Ritual Output Console -->
