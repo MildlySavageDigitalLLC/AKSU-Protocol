@@ -177,14 +177,24 @@ function showCountdown(seconds) {
 function startAutoMining() {
   stopAutoMining();
   miningActive = true;
+
   const walletId = localStorage.getItem('active_wallet');
-  if (!walletId) return output('⚠️ No active wallet found.');
-  showCountdown(13 * 60);
-  setTimeout(() => {
+  if (!walletId) {
+    output('⚠️ No active wallet found.');
+    return;
+  }
+
+  showCountdown(13 * 60); // Show countdown for 13 minutes
+
+  setTimeout(async () => {
+    const wallet = JSON.parse(localStorage.getItem(walletId));
+    await mineBlock(wallet); // ⛏️ Mine first block immediately after countdown
+
+    // Begin interval for future blocks
     miningLoop = setInterval(async () => {
       if (!miningActive) return;
-      const wallet = JSON.parse(localStorage.getItem(walletId));
-      await mineBlock(wallet);
+      const updatedWallet = JSON.parse(localStorage.getItem(walletId));
+      await mineBlock(updatedWallet);
     }, BLOCK_INTERVAL);
   }, 13 * 60 * 1000);
 }
