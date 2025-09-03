@@ -30,19 +30,30 @@ h1 {
   margin-bottom: 40px;
 }
 
+/* 🔧 Ritual Tab Alignment */
 #actions {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
   margin-bottom: 40px;
 }
 
+/* Remove any unintended blank space */
 #actions:empty {
   display: none;
 }
 
-button {
+.button-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+/* 🪙 Tab Buttons */
+.button-row button,
+#actions button {
   padding: 16px 32px;
   font-size: 1.5em;
   background-color: #222;
@@ -51,17 +62,18 @@ button {
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 260px;
+  width: 240px;
   text-align: center;
 }
 
-button:hover {
+.button-row button:hover,
+#actions button:hover {
   background-color: #333;
   border-color: #ff0000;
   color: #ff0000;
 }
 
-/* 🧾 Ritual Output */
+/* 🧾 Output Scroll */
 #output {
   max-width: 90%;
   background-color: rgba(26, 26, 26, 0.9);
@@ -78,7 +90,6 @@ button:hover {
   margin-bottom: 40px;
   word-break: break-word;
   overflow-wrap: break-word;
-  font-family: 'Orbitron', sans-serif;
 }
 
 /* ✨ Block Transition Animation */
@@ -90,6 +101,11 @@ button:hover {
   0% { background-color: #222; color: #ffd700; }
   50% { background-color: #ff0000; color: #000; }
   100% { background-color: rgba(26, 26, 26, 0.9); color: #ffd700; }
+}
+
+/* Remove ghost spacing from empty output */
+#output:empty {
+  display: none;
 }
 
 /* 📜 Instructions */
