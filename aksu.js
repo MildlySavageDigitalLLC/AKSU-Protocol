@@ -28,18 +28,18 @@ function createWallet() {
 }
 
 function loadWallet() {
-  const keys = Object.keys(localStorage).filter(k => k.startsWith('WALLET_'));
-  if (keys.length === 0) {
-    alert('⚠️ No wallets found.');
-    createWallet();
+  const choice = prompt("🔐 Enter wallet ID:");
+  if (!choice) {
+    alert('⚠️ No wallet ID entered.');
     return;
   }
-  const choice = prompt(`📂 Available Wallets:\n${keys.join('\n')}\n\nEnter wallet ID:`);
+
   const wallet = JSON.parse(localStorage.getItem(choice));
   if (!wallet) {
     alert('❌ Wallet not found.');
     return;
   }
+
   localStorage.setItem('active_wallet', choice);
   document.getElementById('wallet-info').innerText = `✅ Loaded Wallet: ${wallet.address}`;
   showActions();
