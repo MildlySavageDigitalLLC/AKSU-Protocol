@@ -4,6 +4,7 @@ const MINT_AMOUNT = 23.0;
 const TOTAL_SUPPLY = 13000000.0;
 const GENESIS_LOCK = 1300000.0;
 const AVAILABLE_SUPPLY = TOTAL_SUPPLY - GENESIS_LOCK;
+const DIFFICULTY = 4; // Leading zeros required in hash
 
 let miningLoop = null;
 let miningActive = false;
@@ -60,21 +61,27 @@ function saveChainState(state) {
   localStorage.setItem('chain_state', JSON.stringify(state));
 }
 
-// 📜 Ledger Logging
-function logTransaction(sender, receiver, amount) {
-  const tx = {
-    timestamp: new Date().toISOString(),
-    sender,
-    receiver,
-    amount
-  };
+// 🔐 Quantum-Resilient Hash Seal
+async function hashSeal(input) {
+  const buffer = new TextEncoder().encode(input);
+  const digest = await crypto.subtle.digest('SHA-512', buffer);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// 📜 Ledger Logging with Hash Seal
+async function logTransaction(sender, receiver, amount) {
+  const timestamp = new Date().toISOString();
+  const tx = { timestamp, sender, receiver, amount };
+  const input = `${timestamp}-${sender}-${receiver}-${amount}`;
+  tx.hash = await hashSeal(input);
+
   const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
   ledger.push(tx);
   localStorage.setItem('ledger', JSON.stringify(ledger));
 }
 
 // 💸 Transfer Ritual
-function sendAksu() {
+async function sendAksu() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
   const receiver = prompt('Enter receiver wallet address:').trim();
@@ -94,19 +101,59 @@ function sendAksu() {
   receiverWallet.balance += amount;
   localStorage.setItem(wallet.address, JSON.stringify(wallet));
   localStorage.setItem(receiverWallet.address, JSON.stringify(receiverWallet));
-  logTransaction(wallet.address, receiverWallet.address, amount);
+  await logTransaction(wallet.address, receiverWallet.address, amount);
 
   output(`💸 Sent ${amount} AK$U → ${receiver}\n📉 New Balance: ${wallet.balance} AK$U`);
 }
 
+// 📘 Block Logging
+function logBlock(block) {
+  const log = JSON.parse(localStorage.getItem('block_log') || '[]');
+  log.push(block);
+  localStorage.setItem('block_log', JSON.stringify(log));
+}
+
+function verifyBlocks() {
+  const log = JSON.parse(localStorage.getItem('block_log') || '[]');
+  if (log.length === 0) {
+    output("📭 No blocks to verify.");
+    return;
+  }
+
+  let report = "🔍 Block Verification Report\n\n";
+  log.forEach(b => {
+    report += `Block ${b.blockNumber} | ${b.amount} AK$U → ${b.wallet}\n`;
+    report += `🕰️ ${b.timestamp} | 🔮 ${b.sigil} | 🔐 Nonce: ${b.nonce}\n`;
+    report += `🔗 Hash: ${b.hash}\n\n`;
+  });
+
+  output(report);
+}
+
+// 🔐 Proof-of-Work Ritual
+async function performProofOfWork(blockNumber) {
+  let nonce = 0;
+  let hash = '';
+  const target = '0'.repeat(DIFFICULTY);
+
+  while (true) {
+    const input = `${blockNumber}-${Date.now()}-${nonce}`;
+    hash = await hashSeal(input);
+    if (hash.startsWith(target)) break;
+    nonce++;
+  }
+
+  return { nonce, hash };
+}
+
 // ⛏️ Mining Ritual
-function mineBlock(wallet) {
+async function mineBlock(wallet) {
   const state = loadChainState();
   const blockNumber = state.block_height + 1;
   const entropy = crypto.randomUUID().replace(/-/g, '');
-  const proof = Math.floor(Math.random() * (99999 - 1000 + 1)) + 1000;
   const timestamp = new Date().toLocaleString();
   const sigil = `SIGIL_${blockNumber}_${entropy.slice(0, 8)}`;
+  const { nonce, hash } = await performProofOfWork(blockNumber);
 
   wallet.balance += MINT_AMOUNT;
   wallet.last_mined = Date.now();
@@ -117,13 +164,25 @@ function mineBlock(wallet) {
   state.remaining = +(AVAILABLE_SUPPLY - state.circulating).toFixed(2);
   saveChainState(state);
 
+  const block = {
+    blockNumber,
+    timestamp,
+    sigil,
+    nonce,
+    hash,
+    wallet: wallet.address,
+    amount: MINT_AMOUNT
+  };
+  logBlock(block);
+
   output(`⛏️ Block ${blockNumber} Mined | ${MINT_AMOUNT} AK$U → ${wallet.address}
-🔮 Sigil: ${sigil} | Proof: ${proof} | Time: ${timestamp}
+🔮 Sigil: ${sigil} | 🔐 Nonce: ${nonce}
+🔗 Hash: ${hash}
 📊 Circulating: ${state.circulating} AK$U | Remaining: ${state.remaining} AK$U
 💰 Wallet Balance: ${wallet.balance} AK$U`);
 }
 
-// ▶️ Start Mining Ritual (Fresh Every Time)
+// ▶️ Start Mining Ritual (Delayed Start)
 function startAutoMining() {
   stopAutoMining(); // Clear any previous loop
   miningActive = true;
@@ -134,16 +193,12 @@ function startAutoMining() {
     return;
   }
 
-  const wallet = JSON.parse(localStorage.getItem(walletId));
+  output(`⏳ Mining ritual initiated. First block will be mined in 13 minutes.`);
 
-  // Mine immediately
-  mineBlock(wallet);
-
-  // Schedule next block every 13 minutes
-  miningLoop = setInterval(() => {
+  miningLoop = setInterval(async () => {
     if (!miningActive) return;
-    const updatedWallet = JSON.parse(localStorage.getItem(walletId));
-    mineBlock(updatedWallet);
+    const wallet = JSON.parse(localStorage.getItem(walletId));
+    await mineBlock(wallet);
   }, BLOCK_INTERVAL);
 }
 
