@@ -35,6 +35,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 16px;
   margin-bottom: 40px;
 }
 
@@ -43,16 +44,7 @@ h1 {
   display: none;
 }
 
-.button-row {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 10px;
-}
-
 /* 🪙 Tab Buttons */
-.button-row button,
 #actions button {
   padding: 16px 32px;
   font-size: 1.5em;
@@ -66,7 +58,6 @@ h1 {
   text-align: center;
 }
 
-.button-row button:hover,
 #actions button:hover {
   background-color: #333;
   border-color: #ff0000;
