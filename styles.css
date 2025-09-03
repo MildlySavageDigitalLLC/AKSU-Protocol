@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
 body {
   margin: 0;
@@ -15,14 +15,14 @@ body {
 }
 
 h1 {
-  font-size: clamp(3rem, 8vw, 6rem); /* Smaller, responsive */
+  font-size: clamp(3rem, 8vw, 6rem);
   font-weight: 700;
   text-align: center;
   letter-spacing: 0.15em;
   margin-bottom: 40px;
 }
 
-#wallet-section, #actions {
+#wallet-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,7 +30,29 @@ h1 {
   margin-bottom: 40px;
 }
 
-button {
+/* 🔧 Ritual Tab Alignment */
+#actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+/* Remove any unintended blank space */
+#actions:empty {
+  display: none;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+/* 🪙 Tab Buttons */
+.button-row button {
   padding: 16px 32px;
   font-size: 1.5em;
   background-color: #222;
@@ -39,16 +61,17 @@ button {
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 260px;
+  width: 240px;
   text-align: center;
 }
 
-button:hover {
+.button-row button:hover {
   background-color: #333;
   border-color: #ff0000;
   color: #ff0000;
 }
 
+/* 🧾 Output Scroll */
 #output {
   max-width: 90%;
   background-color: rgba(26, 26, 26, 0.9);
@@ -62,4 +85,10 @@ button:hover {
   border-radius: 12px;
   color: #ffd700;
   text-shadow: 0 0 5px #000;
+  margin-bottom: 40px;
+}
+
+/* Remove ghost spacing from empty output */
+#output:empty {
+  display: none;
 }
