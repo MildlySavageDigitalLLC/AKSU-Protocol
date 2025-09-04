@@ -19,13 +19,17 @@
   <!-- ⚙️ Protocol Actions -->
   <div id="actions" style="display:none;">
     <div class="button-row top-row">
-    <button onclick="startAutoMining()">⛏️Start Mining</button>
-    <button onclick="stopAutoMining()">🚫Stop Mining</button>
-    <button onclick="sendAksu()">📨Send AK$U</button>
-  </div>
-  <div class="button-row bottom-row">
-    <button onclick="viewBalance()">⚖️View Balance</button>
-    <button id="verify-button" onclick="verifyBlocks()">📜Verify Ledger</button>
+      <button id="startMiningBtn" onclick="startAutoMining()">⛏️Start Mining</button>
+      <button id="stopMiningBtn" onclick="stopAutoMining()">🚫Stop Mining</button>
+      <button onclick="sendAksu()">📨Send AK$U</button>
+    </div>
+    <div class="button-row bottom-row">
+      <button onclick="viewBalance()">⚖️View Balance</button>
+      <button id="verify-button" onclick="verifyBlocks()">📜Verify Ledger</button>
+    </div>
+    <div class="button-row back-row">
+      <button id="back-button" onclick="showMiningScreen()">🔙 Back to Mining</button>
+    </div>
   </div>
 
   <!-- 🧾 Ritual Output Console -->
@@ -37,12 +41,11 @@
     <ol>
       <li>Create a Digital Wallet</li>
       <li>Copy and Store Wallet Address safely and privately (each wallet address only issued once but you can attain more than one wallet address).</li>
-      <li>Press "Start Mining" tab to begin mining AK$U. Press the "Stop" Mining tab to halt the mining process...to start back mining press "Start Mining" tab again.</li>
+      <li>Press "Start Mining" tab to begin mining AK$U. Mining begins immediately and continues every 13 minutes until stopped.</li>
       <li>To view your wallet balance press the "View Balance" tab.</li>
       <li>To Send AK$U, press the "Send" tab, enter the recipient address, and follow prompts.</li>
       <li>To "Load" an existing wallet press the "Load Wallet" tab, enter your wallet address, and follow prompts.</li>
-      <li>Once mining begins, wait the 13 minute timer to join the current chain state. Any screen tab inquiry will reset the chain state. To ensure continuous chain state,
-      access other tabs before mining begins or you will need to restart the chain state. If network congestion occurs, refresh screen and begin mining again.</li>
+      <li>Mining state is preserved across sessions. You may return to the mining screen using the Back button without restarting the chain.</li>
     </ol>
   </div>
 
