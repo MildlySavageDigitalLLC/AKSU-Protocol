@@ -8,6 +8,7 @@ const DIFFICULTY = 4;
 
 let miningLoop = null;
 let miningActive = false;
+let miningStarted = false;
 
 // 🪪 Wallet Functions
 function generateWalletAddress() {
@@ -139,7 +140,7 @@ async function mineBlock(wallet) {
   const blockNumber = state.block_height + 1;
   const entropy = crypto.randomUUID().replace(/-/g, '');
   const timestamp = getEasternTimestamp();
-  const sigil = `SIGIL_${blockNumber}_${entropy.slice(0, 8)}`;
+  const sigil = `SIGIL${blockNumber}${entropy.slice(0, 8)}`;
   const { nonce, hash } = await performProofOfWork(blockNumber);
   wallet.balance += MINT_AMOUNT;
   wallet.last_mined = Date.now();
@@ -160,22 +161,10 @@ async function mineBlock(wallet) {
 💰 Wallet Balance: ${wallet.balance} AK$U`);
 }
 
-// ▶️ Start Mining Ritual with Countdown
-function showCountdown(seconds) {
-  let remaining = seconds;
-  const countdown = setInterval(() => {
-    if (remaining <= 0) {
-      clearInterval(countdown);
-      output(`⛏️ Mining ritual begins now.`);
-      return;
-    }
-    output(`⏳ Mining begins in ${remaining} seconds...`);
-    remaining--;
-  }, 1000);
-}
-
+// ▶️ Start Mining Immediately (One-Time Activation)
 function startAutoMining() {
-  stopAutoMining();
+  if (miningStarted) return; // Prevent multiple activations
+  miningStarted = true;
   miningActive = true;
 
   const walletId = localStorage.getItem('active_wallet');
@@ -184,19 +173,14 @@ function startAutoMining() {
     return;
   }
 
-  showCountdown(13 * 60); // Show countdown for 13 minutes
+  const wallet = JSON.parse(localStorage.getItem(walletId));
+  mineBlock(wallet); // ⛏️ Mine first block immediately
 
-  setTimeout(async () => {
-    const wallet = JSON.parse(localStorage.getItem(walletId));
-    await mineBlock(wallet); // ⛏️ Mine first block immediately after countdown
-
-    // Begin interval for future blocks
-    miningLoop = setInterval(async () => {
-      if (!miningActive) return;
-      const updatedWallet = JSON.parse(localStorage.getItem(walletId));
-      await mineBlock(updatedWallet);
-    }, BLOCK_INTERVAL);
-  }, 13 * 60 * 1000);
+  miningLoop = setInterval(async () => {
+    if (!miningActive) return;
+    const updatedWallet = JSON.parse(localStorage.getItem(walletId));
+    await mineBlock(updatedWallet);
+  }, BLOCK_INTERVAL);
 }
 
 // ⏹️ Stop Mining Ritual
@@ -207,6 +191,7 @@ function stopAutoMining() {
     miningLoop = null;
   }
   output(`🛑 Mining stopped. Protocol paused.`);
+  miningStarted = false;
 }
 
 // 💼 View Balance
@@ -228,10 +213,10 @@ function refreshState() {
 💰 Balance: ${wallet.balance} AK$U`);
 }
 
-  // 🧾 Ritual Output
+// 🧾 Ritual Output
 function output(text) {
   const el = document.getElementById('output');
-  el.classList.remove('block-flash'); // Reset animation class
+  el.classList.remove('block-flash');
   el.innerText = text;
 }
 
@@ -242,16 +227,31 @@ function animateBlock() {
   setTimeout(() => el.classList.remove('block-flash'), 1000);
 }
 
+// 🔙 Back Button Logic
+function showMiningScreen() {
+  document.getElementById('wallet-section').style.display = 'none';
+  document.getElementById('actions').style.display = 'flex';
+  document.getElementById('instructions').style.display = 'none';
+  document.getElementById('output').style.display = 'block';
+}
+
 // 🧭 Show Action Buttons + Ledger Button
 function showActions() {
-  document.getElementById('actions').style.display = 'block';
+  document.getElementById('actions').style.display = 'flex';
 
-  // Add ledger verification button if not already present
   if (!document.getElementById('verify-button')) {
     const btn = document.createElement('button');
     btn.id = 'verify-button';
     btn.innerText = '📜 Verify Ledger';
     btn.onclick = verifyBlocks;
-    document.getElementById('actions').appendChild(btn);
+    document.querySelector('.button-row:last-of-type').appendChild(btn);
+  }
+
+  if (!document.getElementById('back-button')) {
+    const backBtn = document.createElement('button');
+    backBtn.id = 'back-button';
+    backBtn.innerText = '🔙 Back to Mining';
+    backBtn.onclick = showMiningScreen;
+    document.getElementById('actions').appendChild(backBtn);
   }
 }
