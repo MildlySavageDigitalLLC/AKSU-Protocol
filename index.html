@@ -9,75 +9,58 @@
       background: #111;
       color: #eee;
       padding: 20px;
+      text-align: center;
     }
     button {
       margin: 5px;
-      padding: 10px;
+      padding: 10px 20px;
       font-size: 1em;
       background: #333;
       color: #fff;
       border: none;
+      border-radius: 6px;
       cursor: pointer;
     }
     button:hover {
       background: #555;
     }
-    #output.block-flash {
-      animation: flash 1s ease-in-out;
-    }
-    @keyframes flash {
-      0% { background-color: #222; }
-      50% { background-color: #444; }
-      100% { background-color: #222; }
-    }
     .button-row {
       display: flex;
+      justify-content: center;
       flex-wrap: wrap;
       margin-top: 10px;
     }
-    #wallet-section, #actions, #instructions, #output {
-      margin-top: 20px;
+    #output {
+      margin-top: 30px;
+    }
+    .mining-box {
+      background: #111;
+      color: #0f0;
+      border: 2px solid #0f0;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 40px auto;
+      text-align: center;
+      font-family: monospace;
+      box-shadow: 0 0 20px #0f0;
     }
   </style>
 </head>
 <body>
 
-  <h1>👑AKSU</h1>
+  <h1>👑 AKSU Protocol</h1>
 
-  <div id="wallet-section">
-    <button onclick="createWallet()">🆕 Create Wallet</button>
-    <button onclick="loadWallet()">🔐 Load Wallet</button>
-    <div id="wallet-info">No wallet loaded.</div>
+  <div class="button-row">
+    <button onclick="startMining()">⛏️ Start Mining</button>
+    <button onclick="stopMining()">🛑 Stop Mining</button>
   </div>
 
-  <div id="actions">
-    <div class="button-row top-row">
-      <button id="startMiningBtn" onclick="startAutoMining()">⛏️ Start Mining</button>
-      <button id="stopMiningBtn" onclick="stopAutoMining()">🛑 Stop Mining</button>
-      <button onclick="sendAksu()">📨 Send AK$U</button>
-    </div>
-    <div class="button-row bottom-row">
-      <button onclick="viewBalance()">💼 View Balance</button>
-      <button id="verify-button" onclick="verifyBlocks()">📜 Verify Ledger</button>
-    </div>
-    <div class="button-row back-row">
+  <div id="output">
+    <div class="mining-box">
+      🔂 Awaiting mining event...
     </div>
   </div>
-
-  <div id="instructions">
-    <p> </p>
-  </div>
-
-  <pre id="output">🔂🎁🔂...</pre>
-
-  <script>
-    function showMiningScreen() {
-      document.getElementById('wallet-section').style.display = 'flex';
-      document.getElementById('actions').style.display = 'flex';
-      document.getElementById('instructions').style.display = 'block';
-      document.getElementById('output').style.display = 'block';
-    }
-  </script>
 
   <script src="aksu.js"></script>
 </body>
