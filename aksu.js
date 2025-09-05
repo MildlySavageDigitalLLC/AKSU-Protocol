@@ -1,5 +1,5 @@
 // 🔧 Constants
-const BLOCK_INTERVAL = 121 * 1000; // 2 minutes 1 second
+const BLOCK_INTERVAL = 121 * 1000;
 const MINT_AMOUNT = 13.0;
 const TOTAL_SUPPLY = 13000000.0;
 const GENESIS_LOCK = 1000000.0;
@@ -84,11 +84,9 @@ async function sendAksu() {
   output(`💸 Sent ${amount} AK$U → ${receiver}\n📉 New Balance: ${wallet.balance} AK$U`);
 }
 
-// ⛏️ Start Mining Ritual (Immediate, One-Time Activation)
+// ⛏️ Start Mining Ritual
 function startAutoMining() {
   if (miningStarted || miningActive) return;
-  miningStarted = true;
-  miningActive = true;
 
   const walletId = localStorage.getItem('active_wallet');
   if (!walletId) {
@@ -96,14 +94,40 @@ function startAutoMining() {
     return;
   }
 
+  miningStarted = true;
+  miningActive = true;
+
   const wallet = JSON.parse(localStorage.getItem(walletId));
-  mineBlock(wallet); // ⛏️ Mine first block immediately
+  mineBlock(wallet);
 
   miningLoop = setInterval(async () => {
     if (!miningActive) return;
     const updatedWallet = JSON.parse(localStorage.getItem(walletId));
     await mineBlock(updatedWallet);
   }, BLOCK_INTERVAL);
+}
+
+// ⛏️ Mining Logic
+async function mineBlock(wallet) {
+  const state = loadChainState();
+  if (state.remaining < MINT_AMOUNT) {
+    output('⛔ No remaining supply to mine.');
+    stopAutoMining();
+    return;
+  }
+
+  wallet.balance += MINT_AMOUNT;
+  wallet.last_mined = new Date().toISOString();
+  state.block_height += 1;
+  state.circulating += MINT_AMOUNT;
+  state.remaining -= MINT_AMOUNT;
+
+  localStorage.setItem(wallet.address, JSON.stringify(wallet));
+  saveChainState(state);
+
+  await logTransaction('MINING_REWARD', wallet.address, MINT_AMOUNT);
+  output(`⛏️ Block #${state.block_height} mined\n💰 ${MINT_AMOUNT} AK$U → ${wallet.address}`);
+  animateBlock();
 }
 
 // ⏹️ Stop Mining Ritual
@@ -136,6 +160,16 @@ function refreshState() {
 💰 Balance: ${wallet.balance} AK$U`);
 }
 
+// 📜 Verify Ledger Ritual
+function verifyBlocks() {
+  const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
+  let report = `📜 Ledger Verification\nTotal Transactions: ${ledger.length}\n\n`;
+  ledger.forEach(tx => {
+    report += `⏱️ ${tx.timestamp}\n🔁 ${tx.sender} → ${tx.receiver}\n💸 ${tx.amount} AK$U\n🔐 Hash: ${tx.hash}\n\n`;
+  });
+  output(report);
+}
+
 // 🧾 Ritual Output
 function output(text) {
   const el = document.getElementById('output');
@@ -162,20 +196,4 @@ function showMiningScreen() {
 function showActions() {
   document.getElementById('actions').style.display = 'flex';
   document.getElementById('wallet-section').style.display = 'flex';
-
-  if (!document.getElementById('verify-button')) {
-    const btn = document.createElement('button');
-    btn.id = 'verify-button';
-    btn.innerText = '📜 Verify Ledger';
-    btn.onclick = verifyBlocks;
-    document.querySelector('.button-row.bottom-row').appendChild(btn);
-  }
-
-  if (!document.getElementById('back-button')) {
-    const backBtn = document.createElement('button');
-    backBtn.id = 'back-button';
-    backBtn.innerText = '🔙 Back to Mining';
-    backBtn.onclick = showMiningScreen;
-    document.querySelector('.button-row.back-row')?.appendChild(backBtn);
-  }
 }
