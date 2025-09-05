@@ -130,6 +130,7 @@ function mineBlock(wallet) {
 }
 
 // 💸 Send AK$U Peer-to-Peer
+// 💸 Send AK$U Peer-to-Peer
 function sendAksu() {
   const senderId = localStorage.getItem('active_wallet');
   const sender = JSON.parse(localStorage.getItem(senderId));
@@ -152,7 +153,11 @@ function sendAksu() {
   localStorage.setItem(sender.address, JSON.stringify(sender));
   localStorage.setItem(receiver.address, JSON.stringify(receiver));
 
-  const txHash = generateHash(`${sender.address}-${receiver.address}-${amount}-${Date.now()}`);
+  const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
+  const txIndex = ledger.length;
+  const entropy = `${sender.address}-${receiver.address}-${amount}-${Date.now()}-${txIndex}-${crypto.randomUUID()}`;
+  const txHash = generateHash(entropy);
+
   const tx = {
     timestamp: new Date().toISOString(),
     sender: sender.address,
@@ -160,7 +165,6 @@ function sendAksu() {
     amount,
     txHash
   };
-  const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
   ledger.push(tx);
   localStorage.setItem('ledger', JSON.stringify(ledger));
 
