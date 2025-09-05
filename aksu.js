@@ -246,7 +246,7 @@ function generateHash(input) {
 // 📦 Display Mining Data
 function displayMiningData(data) {
   const box = document.getElementById('output');
-  const shortHash = data.hash.length > 21 ? data.hash.slice(0, 28) : data.hash;
+  const shortHash = data.hash.length > 21 ? data.hash.slice(0, 21) : data.hash;
 
   box.innerHTML = `
     <div class="mining-box">
