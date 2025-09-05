@@ -130,7 +130,6 @@ function mineBlock(wallet) {
 }
 
 // 💸 Send AK$U Peer-to-Peer
-// 💸 Send AK$U Peer-to-Peer
 function sendAksu() {
   const senderId = localStorage.getItem('active_wallet');
   const sender = JSON.parse(localStorage.getItem(senderId));
@@ -247,6 +246,8 @@ function generateHash(input) {
 // 📦 Display Mining Data
 function displayMiningData(data) {
   const box = document.getElementById('output');
+  const shortHash = data.hash.length > 28 ? data.hash.slice(0, 28) : data.hash;
+
   box.innerHTML = `
     <div class="mining-box">
       <h2>🧱 Block ${data.block} Mined</h2>
@@ -256,7 +257,7 @@ function displayMiningData(data) {
       <p><strong>Remaining:</strong> ${data.remaining} AK$U</p>
       <p><strong>Timestamp:</strong> ${data.timestamp}</p>
       <p><strong>Sigil:</strong> ${data.sigil}</p>
-      <p><strong>Hash:</strong> ${data.hash}</p>
+      <p><strong>Hash:</strong> <span title="${data.hash}">${shortHash}</span></p>
     </div>
     <div style="margin-top:20px; text-align:center;">
       <button onclick="viewLedger()">📜 View Ledger</button>
