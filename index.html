@@ -4,22 +4,45 @@
   <meta charset="UTF-8">
   <title>AKSU Protocol</title>
   <style>
-    body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
-    button { margin: 5px; padding: 10px; font-size: 1em; background: #333; color: #fff; border: none; cursor: pointer; }
-    button:hover { background: #555; }
-    #output.block-flash { animation: flash 1s ease-in-out; }
+    body {
+      font-family: monospace;
+      background: #111;
+      color: #eee;
+      padding: 20px;
+    }
+    button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 1em;
+      background: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #555;
+    }
+    #output.block-flash {
+      animation: flash 1s ease-in-out;
+    }
     @keyframes flash {
       0% { background-color: #222; }
       50% { background-color: #444; }
       100% { background-color: #222; }
     }
-    .button-row { display: flex; flex-wrap: wrap; margin-top: 10px; }
-    #wallet-section, #actions, #instructions, #output { margin-top: 20px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    #wallet-section, #actions, #instructions, #output {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>👑AKSU Protocol Console</h1>
+  <h1>👑 AKSU Protocol Console</h1>
 
   <div id="wallet-section">
     <button onclick="createWallet()">🆕 Create Wallet</button>
@@ -47,6 +70,15 @@
   </div>
 
   <pre id="output">🔧 Awaiting ritual activation...</pre>
+
+  <script>
+    function showMiningScreen() {
+      document.getElementById('wallet-section').style.display = 'flex';
+      document.getElementById('actions').style.display = 'flex';
+      document.getElementById('instructions').style.display = 'block';
+      document.getElementById('output').style.display = 'block';
+    }
+  </script>
 
   <script src="aksu.js"></script>
 </body>
