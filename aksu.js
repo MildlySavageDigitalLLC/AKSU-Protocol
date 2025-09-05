@@ -1,11 +1,9 @@
 // 🔧 Constants
-const BLOCK_INTERVAL = 121 * 1000; // 2 minutes 1 second
+const BLOCK_INTERVAL = 121 * 1000; // ⏱️ 2 minutes 1 second
 const MINT_AMOUNT = 13.0;
 const TOTAL_SUPPLY = 13000000.0;
-const GENESIS_LOCK = 1000000.0;
+const GENESIS_LOCK = 1300000.0;
 const AVAILABLE_SUPPLY = TOTAL_SUPPLY - GENESIS_LOCK;
-
-let miningLoop = null;
 
 // 🪪 Wallet Functions
 function generateWalletAddress() {
@@ -21,13 +19,18 @@ function createWallet() {
     last_mined: null
   };
   localStorage.setItem(address, JSON.stringify(wallet));
-  localStorage.setItem('active_wallet', address);
   document.getElementById('wallet-info').innerText = `🆕 Created Wallet: ${address}`;
   showActions();
 }
 
 function loadWallet() {
-  const choice = prompt("🔐 Enter wallet ID:");
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('WALLET_'));
+  if (keys.length === 0) {
+    alert('⚠️ No wallets found.');
+    createWallet();
+    return;
+  }
+  const choice = prompt(`📂 Available Wallets:\n${keys.join('\n')}\n\nEnter wallet ID:`);
   const wallet = JSON.parse(localStorage.getItem(choice));
   if (!wallet) {
     alert('❌ Wallet not found.');
@@ -102,12 +105,6 @@ function mineBlock(wallet) {
   }
 
   const state = loadChainState();
-  if (state.remaining < MINT_AMOUNT) {
-    output('⛔ No remaining supply to mine.');
-    stopMining();
-    return;
-  }
-
   const blockNumber = state.block_height + 1;
   const entropy = crypto.randomUUID().replace(/-/g, '');
   const proof = Math.floor(Math.random() * (99999 - 1000 + 1)) + 1000;
@@ -123,57 +120,18 @@ function mineBlock(wallet) {
   state.remaining = +(AVAILABLE_SUPPLY - state.circulating).toFixed(2);
   saveChainState(state);
 
-  logTransaction('MINING_REWARD', wallet.address, MINT_AMOUNT);
-
   output(`⛏️ Block ${blockNumber} Mined | ${MINT_AMOUNT} AK$U → ${wallet.address}
 🔮 Sigil: ${sigil} | Proof: ${proof} | Time: ${timestamp}
 📊 Circulating: ${state.circulating} AK$U | Remaining: ${state.remaining} AK$U
 💰 Wallet Balance: ${wallet.balance} AK$U`);
 }
 
-// 🔁 Start Mining Loop
 function startMining() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
-  if (!wallet) {
-    output("⚠️ No active wallet found.");
-    return;
-  }
-
-  mineBlock(wallet); // Immediate mine
-
-  miningLoop = setInterval(() => {
-    const updatedWallet = JSON.parse(localStorage.getItem(walletId));
-    mineBlock(updatedWallet);
-  }, BLOCK_INTERVAL);
-
-  output("⛏️ Mining started.");
+  mineBlock(wallet);
 }
 
-// 🛑 Stop Mining
-function stopMining() {
-  clearInterval(miningLoop);
-  miningLoop = null;
-  output("🛑 Mining stopped.");
-}
-
-// 📜 Verify Ledger
-function verifyLedger() {
-  const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
-  if (ledger.length === 0) {
-    output("📭 No transactions found.");
-    return;
-  }
-
-  let report = "📜 Ledger Verification\n\n";
-  ledger.forEach(tx => {
-    report += `⏱️ ${tx.timestamp}\n🔁 ${tx.sender} → ${tx.receiver}\n💸 ${tx.amount} AK$U\n\n`;
-  });
-
-  output(report);
-}
-
-// 💼 View Balance
 function viewBalance() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
@@ -198,7 +156,6 @@ function output(text) {
   document.getElementById('output').innerText = text;
 }
 
-// 🎛️ Reveal Action Buttons
 function showActions() {
   document.getElementById('actions').style.display = 'block';
 }
