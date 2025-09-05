@@ -1,6 +1,6 @@
 // 🔧 Constants
-const BLOCK_INTERVAL = 121 * 1000; // ⏱️ 2 minutes 1 second
-const MINT_AMOUNT = 13.0;
+const BLOCK_INTERVAL = 13 * 60 * 1000; // 13 minutes in ms
+const MINT_AMOUNT = 23.0;
 const TOTAL_SUPPLY = 13000000.0;
 const GENESIS_LOCK = 1300000.0;
 const AVAILABLE_SUPPLY = TOTAL_SUPPLY - GENESIS_LOCK;
