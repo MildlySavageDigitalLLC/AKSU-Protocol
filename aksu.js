@@ -21,6 +21,7 @@ function createWallet() {
     last_mined: null
   };
   localStorage.setItem(address, JSON.stringify(wallet));
+  localStorage.setItem('active_wallet', address);
   document.getElementById('wallet-info').innerText = `🆕 Created Wallet: ${address}`;
   showActions();
 }
@@ -103,6 +104,7 @@ function mineBlock(wallet) {
   const state = loadChainState();
   if (state.remaining < MINT_AMOUNT) {
     output('⛔ No remaining supply to mine.');
+    stopMining();
     return;
   }
 
@@ -155,7 +157,7 @@ function stopMining() {
   output("🛑 Mining stopped.");
 }
 
-// 📜 View Ledger
+// 📜 Verify Ledger
 function verifyLedger() {
   const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
   if (ledger.length === 0) {
@@ -196,6 +198,7 @@ function output(text) {
   document.getElementById('output').innerText = text;
 }
 
+// 🎛️ Reveal Action Buttons
 function showActions() {
   document.getElementById('actions').style.display = 'block';
 }
