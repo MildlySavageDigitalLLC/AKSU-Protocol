@@ -6,6 +6,8 @@ const GENESIS_LOCK = 1000000.0;
 const AVAILABLE_SUPPLY = TOTAL_SUPPLY - GENESIS_LOCK;
 
 let miningLoop = null;
+let blockViewLoop = null;
+
 let chainState = JSON.parse(localStorage.getItem('chain_state')) || {
   block_height: 0,
   circulating: 0.0,
@@ -94,6 +96,19 @@ function mineBlock(wallet) {
   const hash = generateHash(`${chainState.block_height}-${timestamp}-${Math.random()}`);
   const sigil = `SIGIL_${chainState.block_height}_${hash.slice(0, 8)}`;
 
+  const tx = {
+    timestamp,
+    sender: "MINING_REWARD",
+    receiver: wallet.address,
+    amount: MINT_AMOUNT,
+    block: chainState.block_height,
+    hash,
+    sigil
+  };
+  const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
+  ledger.push(tx);
+  localStorage.setItem('ledger', JSON.stringify(ledger));
+
   displayMiningData({
     block: chainState.block_height,
     circulating: chainState.circulating,
@@ -143,7 +158,7 @@ function sendAksu() {
 📉 New Balance: ${sender.balance} AK$U`);
 }
 
-// ⛓️ Refresh Chain-state
+// 📜 View Full Ledger
 function viewLedger() {
   const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
   if (ledger.length === 0) {
@@ -156,15 +171,16 @@ function viewLedger() {
     html += `<li style="margin-bottom:10px;">
       <strong>${tx.timestamp}</strong><br>
       🔸 ${tx.sender} → ${tx.receiver}<br>
-      💰 ${tx.amount} AK$U
+      💰 ${tx.amount} AK$U<br>
+      ${tx.block ? `🧱 Block: ${tx.block}<br>🔐 Hash: ${tx.hash}<br>🧿 Sigil: ${tx.sigil}` : ''}
     </li>`;
   });
   html += `</ul><button onclick="backToMining()">🔙 Back to Mining</button>`;
   document.getElementById('output').innerHTML = html;
 }
 
-// 🔙 Back to Wallet 🛅 
-function backToMining() {
+// 🔍 View Current Block Info (Live)
+function viewCurrentBlock() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
   if (!wallet) {
@@ -182,6 +198,27 @@ function backToMining() {
     wallet: wallet.address,
     balance: wallet.balance
   });
+
+  if (blockViewLoop) clearInterval(blockViewLoop);
+  blockViewLoop = setInterval(() => {
+    const updatedWallet = JSON.parse(localStorage.getItem(walletId));
+    displayMiningData({
+      block: chainState.block_height,
+      circulating: chainState.circulating,
+      remaining: chainState.remaining,
+      timestamp: new Date().toLocaleString(),
+      hash: generateHash(`${chainState.block_height}-${updatedWallet.address}`),
+      sigil: `SIGIL_${chainState.block_height}_${updatedWallet.address.slice(-6)}`,
+      wallet: updatedWallet.address,
+      balance: updatedWallet.balance
+    });
+  }, BLOCK_INTERVAL);
+}
+
+// 🔙 Back to Mining View
+function backToMining() {
+  if (blockViewLoop) clearInterval(blockViewLoop);
+  viewCurrentBlock();
 }
 
 // 🛡️ Quantum & Photonic Proof Hashing
@@ -203,8 +240,16 @@ function displayMiningData(data) {
       <p><strong>Circulating:</strong> ${data.circulating} AK$U</p>
       <p><strong>Remaining:</strong> ${data.remaining} AK$U</p>
       <p><strong>Timestamp:</strong> ${data.timestamp}</p>
-      <p><strong>Hash1:</strong> ${data.sigil}</p>
-      <p><strong>Hash2:</strong> ${data.hash}</p>
+      <p><strong>Sigil:</strong> ${data.sigil}</p>
+      <p><strong>
+
+      <p><strong>Hash:</strong> ${data.hash}</p>
+    </div>
+    <div style="margin-top:20px; text-align:center;">
+      <button onclick="viewLedger()">📜 View Ledger</button>
+      <button onclick="viewCurrentBlock()">🔍 View Current Block</button>
+      <button onclick="sendAksu()">💸 Send AK$U</button>
+      <button onclick="stopMining()">🛑 Stop Mining</button>
     </div>
   `;
 }
