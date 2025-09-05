@@ -192,6 +192,11 @@ function showMiningScreen() {
   document.getElementById('output').style.display = 'block';
 }
 
+window.onload = () => {
+  miningStarted = false;
+  showActions();
+};
+
 // 🧭 Show Action Buttons + Ensure Wallet Controls Stay Visible
 function showActions() {
   document.getElementById('actions').style.display = 'flex';
