@@ -143,7 +143,7 @@ function sendAksu() {
 📉 New Balance: ${sender.balance} AK$U`);
 }
 
-// 📜 View Ledger
+// ⛓️ Refresh Chain-state
 function viewLedger() {
   const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
   if (ledger.length === 0) {
@@ -163,7 +163,7 @@ function viewLedger() {
   document.getElementById('output').innerHTML = html;
 }
 
-// 🔙 Back to Mining View
+// 🔙 Back to Wallet 🛅 
 function backToMining() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
@@ -203,8 +203,8 @@ function displayMiningData(data) {
       <p><strong>Circulating:</strong> ${data.circulating} AK$U</p>
       <p><strong>Remaining:</strong> ${data.remaining} AK$U</p>
       <p><strong>Timestamp:</strong> ${data.timestamp}</p>
-      <p><strong>Sigil:</strong> ${data.sigil}</p>
-      <p><strong>Hash:</strong> ${data.hash}</p>
+      <p><strong>Hash1:</strong> ${data.sigil}</p>
+      <p><strong>Hash2:</strong> ${data.hash}</p>
     </div>
   `;
 }
