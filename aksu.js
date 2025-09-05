@@ -24,7 +24,7 @@ function createWallet() {
   };
   localStorage.setItem(address, JSON.stringify(wallet));
   localStorage.setItem('active_wallet', address);
-  output(`🆕 Created Wallet: ${address}`);
+  output(`🆕 Created Wallet: ${address} (copy now, won't be shown again)`);
 }
 
 // 🔐 Load Wallet
@@ -37,6 +37,14 @@ function loadWallet() {
   }
   localStorage.setItem('active_wallet', id);
   output(`✅ Loaded Wallet: ${wallet.address}`);
+}
+
+// 🛡️ Mask Wallet ID for Ledger Display
+function maskWalletId(fullId) {
+  if (!fullId || typeof fullId !== 'string') return '';
+  const raw = fullId.replace('WALLET_', '');
+  const safe = [raw[2], raw[5], raw[8], raw[11]].join('');
+  return `WALLET_${safe}`;
 }
 
 // ⛏️ Start Mining
@@ -168,9 +176,11 @@ function viewLedger() {
 
   let html = `<h2>📜 AKSU Ledger</h2><ul style="list-style:none;padding:0;">`;
   ledger.forEach(tx => {
+    const sender = tx.sender === "MINING_REWARD" ? "MINING_REWARD" : maskWalletId(tx.sender);
+    const receiver = maskWalletId(tx.receiver);
     html += `<li style="margin-bottom:10px;">
       <strong>${tx.timestamp}</strong><br>
-      🔸 ${tx.sender} → ${tx.receiver}<br>
+      🔸 ${sender} → ${receiver}<br>
       💰 ${tx.amount} AK$U<br>
       ${tx.block ? `🧱 Block: ${tx.block}<br>🔐 Hash: ${tx.hash}<br>🧿 Sigil: ${tx.sigil}` : ''}
     </li>`;
@@ -241,8 +251,6 @@ function displayMiningData(data) {
       <p><strong>Remaining:</strong> ${data.remaining} AK$U</p>
       <p><strong>Timestamp:</strong> ${data.timestamp}</p>
       <p><strong>Sigil:</strong> ${data.sigil}</p>
-      <p><strong>
-
       <p><strong>Hash:</strong> ${data.hash}</p>
     </div>
     <div style="margin-top:20px; text-align:center;">
