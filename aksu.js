@@ -5,6 +5,8 @@ const TOTAL_SUPPLY = 13000000.0;
 const GENESIS_LOCK = 1000000.0;
 const AVAILABLE_SUPPLY = TOTAL_SUPPLY - GENESIS_LOCK;
 
+let miningLoop = null;
+
 // 🪪 Wallet Functions
 function generateWalletAddress() {
   const entropy = crypto.randomUUID().replace(/-/g, '');
@@ -24,13 +26,7 @@ function createWallet() {
 }
 
 function loadWallet() {
-  const keys = Object.keys(localStorage).filter(k => k.startsWith('WALLET_'));
-  if (keys.length === 0) {
-    alert('⚠️ No wallets found.');
-    createWallet();
-    return;
-  }
-  const choice = prompt(`📂 Available Wallets:\n${keys.join('\n')}\n\nEnter wallet ID:`);
+  const choice = prompt("🔐 Enter wallet ID:");
   const wallet = JSON.parse(localStorage.getItem(choice));
   if (!wallet) {
     alert('❌ Wallet not found.');
@@ -133,12 +129,49 @@ function mineBlock(wallet) {
 💰 Wallet Balance: ${wallet.balance} AK$U`);
 }
 
+// 🔁 Start Mining Loop
 function startMining() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
-  mineBlock(wallet);
+  if (!wallet) {
+    output("⚠️ No active wallet found.");
+    return;
+  }
+
+  mineBlock(wallet); // Immediate mine
+
+  miningLoop = setInterval(() => {
+    const updatedWallet = JSON.parse(localStorage.getItem(walletId));
+    mineBlock(updatedWallet);
+  }, BLOCK_INTERVAL);
+
+  output("⛏️ Mining started.");
 }
 
+// 🛑 Stop Mining
+function stopMining() {
+  clearInterval(miningLoop);
+  miningLoop = null;
+  output("🛑 Mining stopped.");
+}
+
+// 📜 View Ledger
+function verifyLedger() {
+  const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
+  if (ledger.length === 0) {
+    output("📭 No transactions found.");
+    return;
+  }
+
+  let report = "📜 Ledger Verification\n\n";
+  ledger.forEach(tx => {
+    report += `⏱️ ${tx.timestamp}\n🔁 ${tx.sender} → ${tx.receiver}\n💸 ${tx.amount} AK$U\n\n`;
+  });
+
+  output(report);
+}
+
+// 💼 View Balance
 function viewBalance() {
   const walletId = localStorage.getItem('active_wallet');
   const wallet = JSON.parse(localStorage.getItem(walletId));
@@ -165,4 +198,4 @@ function output(text) {
 
 function showActions() {
   document.getElementById('actions').style.display = 'block';
-    }
+}
