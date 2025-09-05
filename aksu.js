@@ -152,17 +152,20 @@ function sendAksu() {
   localStorage.setItem(sender.address, JSON.stringify(sender));
   localStorage.setItem(receiver.address, JSON.stringify(receiver));
 
+  const txHash = generateHash(`${sender.address}-${receiver.address}-${amount}-${Date.now()}`);
   const tx = {
     timestamp: new Date().toISOString(),
     sender: sender.address,
     receiver: receiver.address,
-    amount
+    amount,
+    txHash
   };
   const ledger = JSON.parse(localStorage.getItem('ledger') || '[]');
   ledger.push(tx);
   localStorage.setItem('ledger', JSON.stringify(ledger));
 
-  output(`✅ Sent ${amount} AK$U → ${receiver.address}
+  output(`✅ Sent ${amount} AK$U
+🔐 Transaction Hash: ${txHash}
 📉 New Balance: ${sender.balance} AK$U`);
 }
 
@@ -176,13 +179,11 @@ function viewLedger() {
 
   let html = `<h2>📜 AKSU Ledger</h2><ul style="list-style:none;padding:0;">`;
   ledger.forEach(tx => {
-    const sender = tx.sender === "MINING_REWARD" ? "MINING_REWARD" : maskWalletId(tx.sender);
-    const receiver = maskWalletId(tx.receiver);
     html += `<li style="margin-bottom:10px;">
       <strong>${tx.timestamp}</strong><br>
-      🔸 ${sender} → ${receiver}<br>
       💰 ${tx.amount} AK$U<br>
-      ${tx.block ? `🧱 Block: ${tx.block}<br>🔐 Hash: ${tx.hash}<br>🧿 Sigil: ${tx.sigil}` : ''}
+      🔐 Transaction Hash: ${tx.txHash || tx.hash}<br>
+      ${tx.block ? `🧱 Block: ${tx.block}<br>🧿 Sigil: ${tx.sigil}` : ''}
     </li>`;
   });
   html += `</ul><button onclick="backToMining()">🔙 Back to Mining</button>`;
