@@ -3,72 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>AKSU Protocol</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      font-family: monospace;
-      background: #111;
-      color: #eee;
-      padding: 20px;
-      text-align: center;
-    }
-    button {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 1em;
-      background: #333;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #555;
-    }
-    .button-row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    #output {
-      margin-top: 30px;
-    }
-    .mining-box {
-      background: #111;
-      color: #0f0;
-      border: 2px solid #0f0;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 600px;
-      margin: 40px auto;
-      text-align: center;
-      font-family: monospace;
-      box-shadow: 0 0 20px #0f0;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
   </style>
 </head>
 <body>
 
-  <h1>👑AK$U</h1>
-  <h5>Decentralized Gifting Protocol</h5>
+  <h1>👑 AK$U</h1>
+  <h2>Decentralized Gifting Protocol</h2>
 
-  <div class="button-row">
+  <div id="wallet-section">
     <button onclick="createWallet()">🆕 Create Wallet</button>
     <button onclick="loadWallet()">🔐 Load Wallet</button>
-    <button onclick="startMining()">⛏️ Start Mining</button>
-    <button onclick="stopMining()">🛑 Stop Mining</button>
-    <button onclick="sendAksu()">📨 Send AK$U</button>
-    <button onclick="refreshchainstate()">📜 Refresh Chain-state</button>
   </div>
 
-  <div id="wallet-info"></div>
+  <div id="actions">
+    <div class="button-row">
+      <button onclick="startMining()">⛏️ Start Mining</button>
+      <button onclick="stopMining()">🛑 Stop Mining</button>
+      <button onclick="sendAksu()">📨 Send AK$U</button>
+      <button onclick="viewCurrentBlock()">📜 Refresh Chain-state</button>
+      <button onclick="viewLedger()">📜 View Ledger</button>
+    </div>
+  </div>
+
+  <div id="wallet-info">No wallet loaded.</div>
 
   <div id="output">
     <div class="mining-box">
-      *Getting Started*
-      🔂 1) Load Wallet ID or Create a Wallet ID.
-      🔂 2) Press "⛏️Start Mining" to run Miner.
-      🔂 3) Follow Prompts for all other commands.
+      <h2>*Getting Started*</h2>
+      <p>🔂 1) Load Wallet ID or Create a Wallet ID.</p>
+      <p>🔂 2) Press "<strong>⛏️ Start Mining</strong>" to run Miner.</p>
+      <p>🔂 3) Follow Prompts for all other commands.</p>
     </div>
   </div>
 
