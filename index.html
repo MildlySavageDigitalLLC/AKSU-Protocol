@@ -49,12 +49,18 @@
 </head>
 <body>
 
-  <h1>👑AK$U</h1>
+  <h1>👑 AK$U Protocol Console</h1>
 
   <div class="button-row">
+    <button onclick="createWallet()">🆕 Create Wallet</button>
+    <button onclick="loadWallet()">🔐 Load Wallet</button>
     <button onclick="startMining()">⛏️ Start Mining</button>
     <button onclick="stopMining()">🛑 Stop Mining</button>
+    <button onclick="sendAksu()">📨 Send AK$U</button>
+    <button onclick="viewLedger()">📜 View Ledger</button>
   </div>
+
+  <div id="wallet-info">No wallet loaded.</div>
 
   <div id="output">
     <div class="mining-box">
